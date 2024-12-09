@@ -1,25 +1,17 @@
-// routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
 const authController = require('../src/controllers/authController');
 
-// Register route
+// Register a new user
 router.post('/register', authController.register);
 
-// Login route
+// Log in an existing user
 router.post('/login', authController.login);
 
-// Add a refresh token endpoint on the backend
-router.post('/refresh-token', (req, res) => {
-    const refreshToken = req.body.refreshToken;
+// Refresh token
+router.post('/refresh-token', authController.refreshToken);
 
-    // Verify the refresh token and issue a new JWT
-    if (isValidRefreshToken(refreshToken)) {
-        const newToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token: newToken });
-    } else {
-        res.status(401).json({ message: 'Invalid refresh token' });
-    }
-});
+// Log out a user (optional, depending on your token handling strategy)
+router.post('/logout', authController.logout);
 
 module.exports = router;
