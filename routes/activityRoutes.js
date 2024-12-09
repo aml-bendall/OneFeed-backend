@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const activityController = require('../src/controllers/activityController');
-const authMiddleware = require('../src/middleware/authMiddleware');
+const activityController = require('../src/controllers/activityLogController');
+const { authMiddleware } = require('../src/middleware/authMiddleware');
 
 // Fetch all activity logs (admin access)
 router.get('/all', authMiddleware, activityController.getAllActivityLogs);

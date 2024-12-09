@@ -1,49 +1,74 @@
 const recipeService = require('../services/recipeService');
 
-// Save a new recipe
-exports.saveRecipe = async (req, res, next) => {
+// Create a new recipe
+exports.createRecipe = async (req, res) => {
   try {
-    const { name, ingredients, instructions, visibility, familyId } = req.body;
-
-    // Access the user ID from the authenticated request
+    const { name, ingredients, instructions, visibility, circleId } = req.body;
     const userId = req.user.id;
-
-    // Call the service to save the recipe, including the user ID and family association
-    const response = await recipeService.saveRecipe(userId, name, ingredients, instructions, visibility, familyId);
-
-    // Send the response back to the frontend
-    res.json({ message: response });
+    const message = await recipeService.saveRecipe(userId, name, ingredients, instructions, visibility, circleId);
+    res.json({ message });
   } catch (error) {
-    next(error); // Pass any errors to the error handler
+    res.status(400).json({ message: error.message });
   }
 };
 
-// Get recipes
-exports.getRecipes = async (req, res, next) => {
+// Fetch all recipes accessible to the user
+exports.getRecipes = async (req, res) => {
   try {
-    const { visibility, familyId } = req.query;
+    const { visibility, circleId } = req.query;
     const userId = req.user.id;
-
-    // Call the service to fetch recipes based on visibility and family scope
-    const recipes = await recipeService.getRecipes(userId, visibility, familyId);
-
-    res.json(recipes); // Return the list of recipes
+    const recipes = await recipeService.getRecipes(userId, visibility, circleId);
+    res.json(recipes);
   } catch (error) {
-    next(error); // Pass any errors to the error handler
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Fetch a single recipe by ID
+exports.getRecipeById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const recipe = await recipeService.getRecipeById(userId, id);
+    res.json(recipe);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Update a recipe
+exports.updateRecipe = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, ingredients, instructions, visibility } = req.body;
+    const userId = req.user.id;
+    const message = await recipeService.updateRecipe(userId, id, { name, ingredients, instructions, visibility });
+    res.json({ message });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 // Delete a recipe
-exports.deleteRecipe = async (req, res, next) => {
+exports.deleteRecipe = async (req, res) => {
   try {
-    const { recipeId } = req.params;
+    const { id } = req.params;
     const userId = req.user.id;
-
-    // Call the service to delete the recipe
-    const response = await recipeService.deleteRecipe(userId, recipeId);
-
-    res.json({ message: response });
+    const message = await recipeService.deleteRecipe(userId, id);
+    res.json({ message });
   } catch (error) {
-    next(error); // Pass any errors to the error handler
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// Import recipe to scaler (premium feature)
+exports.importToScaler = async (req, res) => {
+  try {
+    const { recipeId } = req.body;
+    const userId = req.user.id;
+    const message = await recipeService.importToScaler(userId, recipeId);
+    res.json({ message });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };

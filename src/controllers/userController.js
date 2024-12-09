@@ -51,3 +51,16 @@ exports.downgradeToFree = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+// Fetch user activities (requires premium access)
+exports.getUserActivities = async (req, res) => {
+    try {
+      const userId = req.user.id; // Extract user ID from the request
+      const activities = await userService.getUserActivityLogs(userId); // Fetch activity logs
+  
+      res.json(activities);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  };
+  

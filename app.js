@@ -14,7 +14,6 @@ const recipeRoutes = require('./routes/recipeRoutes');
 const circleRoutes = require('./routes/circleRoutes');
 const activityRoutes = require('./routes/activityRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
-const recipeRoutes = require('./routes/recipeRoutes');
 const recipeScalerRoutes = require('./routes/recipeScalerRoutes');
 const paypalRoutes = require('./routes/paypalRoutes');
 
@@ -45,7 +44,7 @@ app.use('/api/circles', circleRoutes); // Circle management routes
 app.use('/api/activities', activityRoutes); // Activity log routes
 app.use('/api/subscriptions', subscriptionRoutes);
 app.use('/api/recipes', recipeRoutes);
-app.use('/api/recipes', recipeScalerRoutes);
+app.use('/api/recipeScaler', recipeScalerRoutes);
 app.use('/api/paypal', paypalRoutes);
 
 // Catch 404 and forward to error handler

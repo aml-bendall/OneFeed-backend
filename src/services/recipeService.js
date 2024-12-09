@@ -91,3 +91,16 @@ exports.deleteRecipe = async (userId, recipeId) => {
     throw new Error('Error deleting recipe: ' + error.message);
   }
 };
+
+// Import recipe to scaler (premium feature)
+exports.importToScaler = async (userId, recipeId) => {
+  try {
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) throw new Error('Recipe not found.');
+
+    // Additional logic to convert and import recipe to the scaler
+    return 'Recipe imported to scaler successfully.';
+  } catch (error) {
+    throw new Error('Error importing recipe to scaler: ' + error.message);
+  }
+};

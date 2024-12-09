@@ -79,3 +79,32 @@ exports.getUserProfile = async (req, res) => {
         res.status(500).json({ message: 'Error fetching user profile', error });
     }
 };
+
+// Refresh token
+exports.refreshToken = async (req, res) => {
+    const { refreshToken } = req.body;
+
+    try {
+        if (!refreshToken) {
+            return res.status(400).json({ message: 'Refresh token is required' });
+        }
+
+        // Verify the refresh token (assuming a separate store for refresh tokens exists)
+        const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+        const newToken = jwt.sign({ id: decoded.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+        res.json({ token: newToken });
+    } catch (error) {
+        res.status(401).json({ message: 'Invalid or expired refresh token', error });
+    }
+};
+
+// Log out a user (optional based on token strategy)
+exports.logout = async (req, res) => {
+    try {
+        // Optionally, invalidate the refresh token here if stored in a database
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error logging out', error });
+    }
+};

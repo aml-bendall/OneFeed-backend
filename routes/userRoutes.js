@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../src/controllers/userController');
-const authMiddleware = require('../src/middleware/authMiddleware');
+const { authMiddleware } = require('../src/middleware/authMiddleware');
+
+console.log('authMiddleware:', authMiddleware); // Should be a function
+console.log('getUserDetails:', userController.getUserDetails); // Should be a function
 
 // Fetch user profile
 router.get('/profile', authMiddleware, userController.getUserDetails);

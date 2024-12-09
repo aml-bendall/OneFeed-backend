@@ -1,4 +1,5 @@
 const ActivityLog = require('../models/ActivityLog'); // Import the Activity Log model
+const User = require('../models/User'); // Import the User model
 
 /**
  * Logs user activity if the user is eligible (e.g., premium users only).
@@ -9,7 +10,11 @@ const ActivityLog = require('../models/ActivityLog'); // Import the Activity Log
  */
 exports.logActivity = async (userId, action, metadata) => {
   try {
-    // Create the activity log entry
+    const user = await User.findById(userId);
+    if (!user || !user.premium) {
+      return; // Do not log activity for non-premium users
+    }
+
     await ActivityLog.create({
       userId,
       action,
@@ -17,7 +22,6 @@ exports.logActivity = async (userId, action, metadata) => {
     });
   } catch (error) {
     console.error(`Error logging activity (${action}):`, error.message);
-    // Optional: Implement a retry mechanism or send alerts for failures
   }
 };
 
@@ -50,3 +54,12 @@ exports.getActivityLogsByAction = async (action, limit = 10) => {
     throw new Error('Unable to fetch activity logs.');
   }
 };
+
+// Service function to fetch activity logs
+exports.getUserActivityLogs = async (userId, limit = 10) => {
+    try {
+      return await ActivityLog.find({ userId }).sort({ createdAt: -1 }).limit(limit);
+    } catch (error) {
+      throw new Error('Error fetching user activity logs: ' + error.message);
+    }
+  };
