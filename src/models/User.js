@@ -10,7 +10,14 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['admin', 'member'], default: 'member' }, // User's role in the system
   premium: { type: Boolean, default: false }, // Premium flag for paid users
   recipeCount: { type: Number, default: 0 }, // Tracks the number of recipes created by the user
-  createdAt: { type: Date, default: Date.now } // Track account creation
+  createdAt: { type: Date, default: Date.now }, // Track account creation
+  subscription: {
+    status: { type: String, enum: ['free', 'premium', 'expired'], default: 'free' },
+    subscriptionId: { type: String }, // PayPal subscription ID
+    paymentMethod: { type: String }, // e.g., 'PayPal'
+    startedAt: { type: Date },
+    expiresAt: { type: Date }, // For premium users
+  }
 });
 
 // Hash the password before saving the user

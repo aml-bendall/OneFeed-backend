@@ -14,6 +14,7 @@ const recipeSchema = new mongoose.Schema({
   visibility: { type: String, enum: ['private', 'circle', 'public'], default: 'private' }, // Recipe visibility
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // User who created the recipe
   circleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Circle' }, // Optional circle ID for shared recipes
+  folderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Folder' }, // NEW: Folder association
   createdAt: { type: Date, default: Date.now }          // Timestamp for recipe creation
 });
 

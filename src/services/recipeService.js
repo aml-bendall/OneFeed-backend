@@ -104,3 +104,67 @@ exports.importToScaler = async (userId, recipeId) => {
     throw new Error('Error importing recipe to scaler: ' + error.message);
   }
 };
+
+// Service function to fetch a recipe by its ID
+exports.getRecipeById = async (userId, recipeId) => {
+  try {
+    const recipe = await Recipe.findById(recipeId);
+
+    if (!recipe) throw new Error('Recipe not found.');
+
+    // Check if the user has permission to view the recipe
+    if (
+      recipe.visibility === 'private' && recipe.createdBy.toString() !== userId
+    ) {
+      throw new Error('Unauthorized: You do not have access to this recipe.');
+    }
+
+    if (
+      recipe.visibility === 'circle' && 
+      (!recipe.circleId || !(await Circle.findById(recipe.circleId)).members.includes(userId))
+    ) {
+      throw new Error('Unauthorized: You are not a member of the circle where this recipe is shared.');
+    }
+
+    // Log activity for premium users
+    await activityLogService.logActivity(userId, 'view_recipe', { recipeId, recipeName: recipe.name });
+
+    return recipe;
+  } catch (error) {
+    throw new Error('Error fetching recipe: ' + error.message);
+  }
+};
+
+// Service function to update a recipe
+exports.updateRecipe = async (userId, recipeId, updateData) => {
+  try {
+    const recipe = await Recipe.findById(recipeId);
+
+    if (!recipe) throw new Error('Recipe not found.');
+
+    // Ensure only the creator can update the recipe
+    if (recipe.createdBy.toString() !== userId) {
+      throw new Error('Unauthorized: Only the creator can update this recipe.');
+    }
+
+    // Update the allowed fields
+    const allowedFields = ['name', 'ingredients', 'instructions', 'visibility', 'description'];
+    Object.keys(updateData).forEach((key) => {
+      if (allowedFields.includes(key)) {
+        recipe[key] = updateData[key];
+      }
+    });
+
+    await recipe.save();
+
+    // Log activity for premium users
+    await activityLogService.logActivity(userId, 'update_recipe', {
+      recipeId,
+      recipeName: recipe.name,
+    });
+
+    return 'Recipe updated successfully.';
+  } catch (error) {
+    throw new Error('Error updating recipe: ' + error.message);
+  }
+};

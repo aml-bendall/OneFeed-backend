@@ -16,6 +16,8 @@ const activityRoutes = require('./routes/activityRoutes');
 const subscriptionRoutes = require('./routes/subscriptionRoutes');
 const recipeScalerRoutes = require('./routes/recipeScalerRoutes');
 const paypalRoutes = require('./routes/paypalRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const folderRoutes = require('./routes/folderRoutes'); // Import folder routes
 
 var app = express();
 
@@ -43,9 +45,11 @@ app.use('/api/recipes', recipeRoutes); // Recipe management routes
 app.use('/api/circles', circleRoutes); // Circle management routes
 app.use('/api/activities', activityRoutes); // Activity log routes
 app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/recipes', recipeRoutes);
 app.use('/api/recipeScaler', recipeScalerRoutes);
 app.use('/api/paypal', paypalRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/folders', folderRoutes); // Mount folder routes
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Catch 404 and forward to error handler
 app.use(function (req, res, next) {

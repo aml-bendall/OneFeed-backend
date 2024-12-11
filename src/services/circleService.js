@@ -103,3 +103,14 @@ exports.deleteCircle = async (circleId, userId) => {
     throw new Error('Error deleting circle: ' + error.message);
   }
 };
+
+// Get all circles for a user
+exports.getAllCircles = async (userId) => {
+    try {
+      const circles = await Circle.find({ members: userId }).populate('createdBy', 'username').populate('members', 'username');
+      return circles;
+    } catch (error) {
+      throw new Error('Error fetching circles: ' + error.message);
+    }
+  };
+  

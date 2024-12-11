@@ -15,4 +15,7 @@ router.post('/:id/join', authMiddleware, circleController.joinCircle);
 // Delete a circle
 router.delete('/:id', authMiddleware, circleController.deleteCircle);
 
+// Get all circles for the user
+router.get('/', authMiddleware, circleController.getAllCircles);
+
 module.exports = router;

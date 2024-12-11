@@ -1,5 +1,5 @@
 const Subscription = require('../models/Subscription');
-const paypalClient = require('../utils/paypalClient');
+const paypalClient = require('../services/paypalService');
 
 // Create a new subscription
 exports.createSubscription = async (userId, plan, paymentId) => {
