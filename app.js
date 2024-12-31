@@ -1,68 +1,44 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-const cors = require('cors'); // Import cors
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors');
 require('dotenv').config();
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const recipeRoutes = require('./routes/recipeRoutes');
-const circleRoutes = require('./routes/circleRoutes');
-const activityRoutes = require('./routes/activityRoutes');
-const subscriptionRoutes = require('./routes/subscriptionRoutes');
-const recipeScalerRoutes = require('./routes/recipeScalerRoutes');
-const paypalRoutes = require('./routes/paypalRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const folderRoutes = require('./routes/folderRoutes'); // Import folder routes
+const socialMediaRoutes = require('./routes/socialMediaRoutes');
 
-var app = express();
+const app = express();
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB', err));
 
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 // Middleware
+app.use(cors());
 app.use(logger('dev'));
-app.use(cors({ origin: 'http://localhost:4200' })); // Configure CORS
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Mount routes
-app.use('/api/auth', authRoutes); // Authentication routes
-app.use('/api/users', userRoutes); // User management routes
-app.use('/api/recipes', recipeRoutes); // Recipe management routes
-app.use('/api/circles', circleRoutes); // Circle management routes
-app.use('/api/activities', activityRoutes); // Activity log routes
-app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/recipeScaler', recipeScalerRoutes);
-app.use('/api/paypal', paypalRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/folders', folderRoutes); // Mount folder routes
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/social-media', socialMediaRoutes);
 
 // Catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+app.use((req, res, next) => next(createError(404)));
 
 // Error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log errors
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500).json({ error: res.locals.message });
 });
 
 module.exports = app;
