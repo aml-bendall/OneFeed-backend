@@ -1,66 +1,21 @@
-const userService = require('../services/userService'); // Import the User Service
+const User = require('../models/User');
 
-// Fetch user details
 exports.getUserDetails = async (req, res) => {
   try {
-    const userId = req.user.id; // Assume authentication middleware provides req.user
-    const userDetails = await userService.getUserDetails(userId);
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    res.json(userDetails);
+    res.status(200).json(user);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-// Update user profile
-exports.updateUserProfile = async (req, res) => {
+exports.updateUserDetails = async (req, res) => {
   try {
-    const userId = req.user.id; // Assume authentication middleware provides req.user
-    const updateData = req.body;
-
-    const message = await userService.updateUserProfile(userId, updateData);
-
-    res.json({ message });
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, req.body, { new: true });
+    res.status(200).json(updatedUser);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
-
-// Upgrade to premium
-exports.upgradeToPremium = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const message = await userService.upgradeToPremium(userId);
-
-    res.json({ message });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Downgrade to free
-exports.downgradeToFree = async (req, res) => {
-  try {
-    const userId = req.user.id;
-
-    const message = await userService.downgradeToFree(userId);
-
-    res.json({ message });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-// Fetch user activities (requires premium access)
-exports.getUserActivities = async (req, res) => {
-    try {
-      const userId = req.user.id; // Extract user ID from the request
-      const activities = await userService.getUserActivityLogs(userId); // Fetch activity logs
-  
-      res.json(activities);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  };
-  
